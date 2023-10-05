@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Bistro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li> <a href="/">Menu </a> </li>
+                <li> <a href="#">Your Order</a> </li>
+                <li> <a href="/orderStatus">Order Status </a> </li>
+                <li> <a href="/orderHistory">Order History </a> </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>DJ Bistro</h1>
+        <h2>Your Order</h2>
+
+        {{#if order}}
+
+        <div class="menu">
+            <table>
+                {{#each order}}
+                <tr>
+                    
+                    <td>{{this.name}}</td>
+                    <td>{{this.price}}</td>
+                    <td>
+                        <form action="/removeFromCart/{{this.name}}/yourOrder">
+                        <button type="submit" class="removeFromCartButton">X</button>
+                        </form>
+                    </td>
+                </tr>
+                {{/each}}
+
+            </table>
+
+            <div class="submitButtons">
+            <form action="/submitOrder" method="get">
+                <button id="submitButton">Submit</button>
+            </form>
+            <form action="/emptyCart" method="get">
+                <button id="emptyCartButton">Empty Cart</button>
+            </form>
+            </div>
+        </div>
+        {{else}}
+        <div class="menu">
+        <p>No Items Yet</p>
+        <a href="/">Go Back To Menu</a>
+            </div>
+        {{/if}}
+    </main>
+
+</body>
+
+</html>

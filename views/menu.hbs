@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Bistro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li> <a href="#">Menu </a> </li>
+                <li> <a href="/yourOrder">Your Order</a> </li>
+                <li> <a href="/orderStatus">Order Status </a> </li>
+                <li> <a href="/orderHistory">Order History </a> </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>DJ Bistro</h1>
+        <h2>Menu</h2>
+
+        <div class="menu">
+
+            {{#each menu}}
+            <div class="menuItem">
+                <img src="{{this.image}}" class="menuPic" alt="Picture of {{this.name}}">
+                <div class="menuInfo">
+                    <h3>
+                        {{this.name}}
+                    </h3>
+                    <p>
+                        {{this.description}}
+                    <p>
+                        Price: {{this.price}}
+                    </p>
+                </div>
+
+
+                {{#if this.contained}}
+                <form action="/removeFromCart/{{this.name}}/menu " method="get">
+                    <button type="submit">Remove</button>
+                </form>
+                {{else}}
+                
+                <form action="/addToCart/{{this.name}}" method="get">
+                    <button type="submit">Add To Cart</button>
+                </form>
+                
+                
+                {{/if}}
+
+            </div>
+            {{/each}}
+
+        </div>
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net" modified="2023-10-04T21:06:31.736Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0" etag="sM7bW0OqMJQmVM6fFhNn" version="22.0.2" type="device">
+  <diagram name="Page-1" id="QlvqCJsYYNntdTBOReTc">
+    <mxGraphModel dx="1497" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Y8-79f9t-udum5vefpgM-1" value="&lt;b&gt;menuItem&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Name:String&lt;/div&gt;&lt;div&gt;Description:String&lt;/div&gt;&lt;div&gt;Price:Number{0.01}&lt;/div&gt;&lt;div&gt;Image:String&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Extra&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Preptime:number&lt;/div&gt;&lt;div&gt;(minuites)&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=bottom;" vertex="1" parent="1">
+          <mxGeometry x="145" y="330" width="110" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="Y8-79f9t-udum5vefpgM-2" value="&lt;b&gt;order&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Customer Name&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Address&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Status:String&lt;br&gt;&lt;/div&gt;&lt;div&gt;Items:[Menu-item.Name]&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;&lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;Date&amp;amp;Time &lt;span style=&quot;color:black&quot; class=&quot;jscolor&quot;&gt;&lt;/span&gt;(JS Date and time object keeps as string?)&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Extra&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Pick Up Time (time ordered + max prep time of items)&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=bottom;" vertex="1" parent="1">
+          <mxGeometry x="350" y="300" width="155" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="Y8-79f9t-udum5vefpgM-4" value="&lt;div&gt;&lt;b&gt;driver&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Username:String&lt;/div&gt;&lt;div&gt;Password:String&lt;/div&gt;&lt;div&gt;Full Name:String&lt;/div&gt;&lt;div&gt;Vehicle Model:String&lt;/div&gt;&lt;div&gt;License Plate:String&lt;/div&gt;&lt;div&gt;Colour:String&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;Extra&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Make:String&lt;br&gt; &lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;verticalAlign=bottom;" vertex="1" parent="1">
+          <mxGeometry x="565" y="305" width="140" height="220" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
