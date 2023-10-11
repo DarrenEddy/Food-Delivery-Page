@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJ Bistro</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
@@ -23,6 +23,39 @@
     <main>
         <h1>DJ Bistro</h1>
         <h2>Order Status</h2>
+
+        {{#if error}}
+        <p class="menu">{{error}}</p>
+        {{/if}}
+
+        <form action="/searchOrderStatus" method="post" class="submitButtons">
+            <label for=""></label>
+            <input type="text" name="orderId" placeholder="Enter Your Order Id">
+            <button type="submit" class="submitButton">Search</button>
+        </form>
+
+        <div class="menu">
+        {{#if order}}
+        <p>
+            Order#: {{order.confirmation}}
+        </p>
+        {{#if driver}}
+        <div style="text-align:center;">
+        <p>
+            Driver: {{driver.fullName}}
+        </p>
+        <p>In a: {{driver.vColour}} {{driver.vModel}} </p>
+        <p>License Plate: {{driver.license}}</p>
+        </div>
+        {{/if}}
+        <p>
+            Order Status: {{order.status}}
+        </p>
+        {{!-- EXTRA? IF TIME  show the picture the driver uploaded --}}
+
+        
+        {{/if}}
+        </div>
     </main>
 
 </body>
