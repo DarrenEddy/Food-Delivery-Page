@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="deliveries.css"/>
+    <title>Order List</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="navMenu">
+                <li><a href="/openDeliveries">A list of open deliveries</a></li>
+                <li><a href="/fulfillment">Delivery fulfillment page</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>List of Order</h1>
+        <div class="deliveriesList">
+            {{errorMsg}}
+            {{#each openOrder}}
+            <div class="deliveriesInfo">
+                <div class="customerOrderInfo">
+                    <h3>Name: {{this.customerName}}</h3>
+                    <p>Address: {{this.address}}</p>
+                    <p>Date: {{this.dateAndTime}}</p>
+                    <ul>
+                    {{#each this.items}}
+                        <li>Item: {{this}}</li>
+                    {{/each}}
+                    </ul>
+                    <h3>Status: {{this.status}}</h3>
+                </div>
+                <form action="/takeOrder/{{this.customerName}}" method="post">
+                    <button type="submit">Take Order</button>
+                </form>
+            </div>
+            {{/each}}
+        </div>
+    </main>
+
+
+</body>
+</html>
