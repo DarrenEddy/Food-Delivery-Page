@@ -64,7 +64,10 @@ const DriverSchema = new Schema({
 })
 const driverCollection = mongoose.model("driver-item", DriverSchema)
 
+
+// ========================Globals=================================
 const currentOrder = []
+const DELIVER_CHARGE = 2
 
 // ===================== /menu =============================
 app.get("/", async (req, res) => {
@@ -90,12 +93,13 @@ app.get("/", async (req, res) => {
 
 //===================== Your Order ================================
 app.get("/yourOrder", async (req, res) => {
-
+    let receipt = []
     try {
         const orderMenuItems = []
         for (nameOfItem of currentOrder) {
             const results = await menuCollection.findOne({ name: nameOfItem }).lean().exec()
             orderMenuItems.push(results)
+            receipt.push(results)
         }
         //REMOVE
         let errParam = false
@@ -110,10 +114,17 @@ app.get("/yourOrder", async (req, res) => {
             orderMenuItems.splice(0, orderMenuItems.length)
             currentOrder.splice(0, currentOrder.length)
             req.session.submitError = ""
+            let total = 0
+            receipt.push({ name: "Delivery Charge", price: DELIVER_CHARGE })
+            for (item of receipt) {
+                total += item.price
+            }
+            receipt.push({ name: "Total", price: total })
+
 
         }
 
-        return res.render("yourOrder", { layout: false, order: orderMenuItems, error: errParam, orderId: passParam })
+        return res.render("yourOrder", { layout: false, order: orderMenuItems, error: errParam, orderId: passParam, rec: receipt })
     }
     catch (err) {
         console.log(err);
@@ -191,36 +202,33 @@ app.get("/orderStatus", async (req, res) => {
         errorMsg = req.session.submitError
         req.session.submitError = ""
     }
-    res.render("orderStatus", { layout: false, error:errorMsg})
+    res.render("orderStatus", { layout: false, error: errorMsg })
 })
 
 app.post("/searchOrderStatus", async (req, res) => {
     const orderId = req.body.orderId
-    
+
     try {
-        
-        if (orderId === "" || orderId === undefined)
-        {
+
+        if (orderId === "" || orderId === undefined) {
             req.session.submitError = "Need To Enter This Field"
             return res.redirect("/orderStatus")
         }
-        const result = await orderCollection.findOne({confirmation:~~orderId}).lean().exec()
-        if (result === null)
-        {
+        const result = await orderCollection.findOne({ confirmation: ~~orderId }).lean().exec()
+        if (result === null) {
             req.session.submitError = "No Order Found"
-            return res.redirect("/orderStatus")    
+            return res.redirect("/orderStatus")
         }
 
         let driver = ""
-        if (result.driverName !== "")
-        {
-            driver = await driverCollection.findOne({username:result.driverName}).lean().exec()
+        if (result.driverName !== "") {
+            driver = await driverCollection.findOne({ username: result.driverName }).lean().exec()
         }
         console.log(driver)
 
-        return res.render("orderStatus", { layout: false, error:"",order:result,driver:driver})
+        return res.render("orderStatus", { layout: false, error: "", order: result, driver: driver })
 
-    
+
     }
     catch (err) {
         console.log(err);
@@ -233,6 +241,73 @@ app.post("/searchOrderStatus", async (req, res) => {
 app.get("/orderHistory", (req, res) => {
     res.render("orderHistory", { layout: false })
 })
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//              Order Processing
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+app.get("/orderProcessing", async (req, res) => {
+    try {
+
+        const results = await orderCollection.find().lean().exec()
+        
+        for (order of results)
+        {
+            //find order Total
+            let total = 0
+            for (item of order.items)
+            {
+                const menuItem = await menuCollection.findOne({name:item}).lean().exec()
+                total += menuItem.price
+            }
+            total += DELIVER_CHARGE
+  
+            if (order.driverName !== "")
+            {
+                const driver = await driverCollection.findOne({username:order.driverName}).lean().exec()
+                order.driverName = driver.fullName
+                order.license = driver.license
+            }
+            
+            //vars for display purposes
+            order.total = total.toFixed(2)
+            order.ready = order.status === "RECEIVED" //used to determine showing READY button or not
+
+        }
+        results.sort((a,b) => 
+        {
+            const dateA = new Date(a.dateAndTime)
+            const dateB = new Date(b.dateAndTime)
+            if (dateA < dateB) return 1
+            if (dateA > dateB) return -1
+            return 0
+        })
+        
+        return res.render("orderProcessing", { layout: false, orders:results })
+
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
+})
+
+app.post("/orderProcessing", async (req, res) => {
+    //load with search
+    res.render("orderProcessing", { layout: false })
+})
+app.get("/processingHistory", (req, res) => {
+    res.render("history", { layout: false })
+})
+
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+//                      Driver Page (Johnny)
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 // =================== Login Page ================================
 

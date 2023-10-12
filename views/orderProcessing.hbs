@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJ Bistro</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/processing.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li> <a href="/orderProcessing">Current</a> </li>
+                <li> <a href="/processingHistory">History</a> </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Current Orders</h1>
+
+        <form action="#" method="post">
+            <input type="text" name="customerName">
+            <button type="submit">Search</button>
+        </form>
+
+        {{#each orders}}
+        <div class="order">
+            <div>
+                <p>Confirmation#: {{this.confirmation}}</p>
+                <p>Status: {{this.status}}</p>
+                <p>Date:{{this.dateAndTime}}</p>
+            </div>
+            <div>
+                <p>Items:{{this.items}}</p>
+                <p>Total: ${{this.total}}</p>
+            </div>
+
+            <div>
+                <p>Name: {{this.customerName}}</p>
+                <p>Address: {{this.address}}</p>
+            </div>
+            <div>
+                {{#if this.ready}}
+                <form action="/ready/{{this.confirmation}}" method="get">
+                    <button class="readyButton" type="submit">READY</button>
+                </form>
+                {{else}}
+                <a href="{{this.confrimation}}.jpg"> View Image</a>
+                {{/if}}
+            </div>
+
+            {{#if this.driverName}}
+
+            <div>
+                <p>Driver: {{this.driverName}}</p>
+                <p>License: {{this.license}}</p>
+                
+            </div>
+            {{else}}
+            <div></div>
+            {{/if}}
+        </div>
+        {{/each}}
+
+
+
+
+    </main>
+
+</body>
+
+</html>
