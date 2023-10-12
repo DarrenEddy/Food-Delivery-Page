@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJ Bistro</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
@@ -43,20 +43,46 @@
 
             </table>
 
+            {{#if error}}
+            <p>Please Enter Your Name AND Address</p>
+            {{/if}}
             <div class="submitButtons">
-            <form action="/submitOrder" method="get">
-                <button id="submitButton">Submit</button>
+            <form action="/submitOrder" method="post">
+                <input type="text" name="name" placeholder="Enter Your Name">
+                <input type="text" name="address" placeholder="Enter Your Address">
+                <button class="submitButton">Submit</button>
             </form>
+
             <form action="/emptyCart" method="get">
                 <button id="emptyCartButton">Empty Cart</button>
             </form>
             </div>
+
         </div>
+        {{else}}
+        {{#if orderId}}
+        <p class="removeFromCartButton">Order#: {{orderId}}</p>
+
+        <h2>Receipt</h2>
+         <div class="menu">
+            <table>
+                {{#each rec}}
+                <tr>
+                    
+                    <td>{{this.name}}</td>
+                    <td>$ {{this.price}}</td>
+                    </tr>
+
+                {{/each}}
+                </table>        
+        </div>
+        
         {{else}}
         <div class="menu">
         <p>No Items Yet</p>
         <a href="/">Go Back To Menu</a>
             </div>
+        {{/if}}
         {{/if}}
     </main>
 

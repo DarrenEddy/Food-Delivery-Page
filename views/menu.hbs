@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJ Bistro</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
@@ -22,6 +22,25 @@
 
     <main>
         <h1>DJ Bistro</h1>
+
+        <p class="address">We're At: 160 Kendal Ave, Toronto, ON M5R 1M3</p>
+
+
+        <h2 >Try Our Feature</h2>
+        <div class="feature">
+            <img src="feature.jpg" id="featurePhoto" alt="Ramen photo">
+            <div>
+                <h3>
+                    Tonkotsu Ramen
+                </h3>
+                <p>With House-made noddles, for limited time get an extra slice of roasted pork when you order Tonkotsu
+                    Ramen</p>
+            </div>
+        </div>
+
+
+
+
         <h2>Menu</h2>
 
         <div class="menu">
@@ -46,12 +65,12 @@
                     <button type="submit">Remove</button>
                 </form>
                 {{else}}
-                
+
                 <form action="/addToCart/{{this.name}}" method="get">
                     <button type="submit">Add To Cart</button>
                 </form>
-                
-                
+
+
                 {{/if}}
 
             </div>

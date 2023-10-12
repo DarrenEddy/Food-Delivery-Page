@@ -1,0 +1,157 @@
+ul
+{
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    list-style:none;
+}
+
+header
+{
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+body
+{
+    background-color: #2c3e50;
+}
+
+a
+{
+    text-decoration: none;
+    color: black;
+    background-color: #e67e22;
+    border-radius: 15px;
+    padding: 10px;
+    font-weight: bolder;
+    color: white;
+}
+
+h1,h2
+{
+    text-align: center;
+    color: white;
+}
+
+.menuPic
+{
+    width: 200px;
+    height:200px;  
+    border-radius: 5px;  
+}
+.menuItem
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap:20px;
+    justify-content: center;
+    
+}
+
+.menuInfo
+{
+    display: flex;
+    flex-direction: column;
+    justify-content:space-around;
+    width: 600px;
+    height: 175px;
+    background-color: #34495e;
+    border-radius: 15px;
+    padding: 10px;
+    
+}
+
+.address
+{
+    color: white;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 60px;
+}
+
+.menu
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    color: white;
+}
+.menuItem button , .submitButton
+{
+    background-color: #e67e22;
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+    font-weight: 100;
+    color: white;
+    width: 100px;
+}
+
+table
+{
+    background-color: #34495e;
+    color: white;
+    padding: 20px 20px 40px 20px;
+    width: 300px;
+    border-radius: 15px;
+}
+tr,td
+{
+    padding-top: 20px;
+}
+.feature
+{
+display: flex;
+flex-direction: row;
+align-items:flex-start;
+justify-content: center;
+gap: 10px;
+margin: 50px 0px;
+}
+.feature > div
+{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    color:white;
+}
+#featurePhoto
+{
+    width: 200px;
+    height: 200px;
+}
+
+#emptyCartButton
+{
+    background-color: #2c3e50;
+    text-decoration: underline;
+    border: none;
+    color: white;
+
+}
+
+.submitButtons
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.removeFromCartButton
+{
+    background-color: #e74c3c;
+    color: White;
+    border: none;
+    padding: 5px;
+    border-radius: 50px;
+    text-align: center;
+    font-weight: bolder;
+}

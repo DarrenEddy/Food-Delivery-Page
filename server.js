@@ -64,7 +64,10 @@ const DriverSchema = new Schema({
 })
 const driverCollection = mongoose.model("driver-item", DriverSchema)
 
+
+// ========================Globals=================================
 const currentOrder = []
+const DELIVER_CHARGE = 2
 
 // ===================== /menu =============================
 app.get("/", async (req, res) => {
@@ -90,12 +93,13 @@ app.get("/", async (req, res) => {
 
 //===================== Your Order ================================
 app.get("/yourOrder", async (req, res) => {
-
+    let receipt = []
     try {
         const orderMenuItems = []
         for (nameOfItem of currentOrder) {
             const results = await menuCollection.findOne({ name: nameOfItem }).lean().exec()
             orderMenuItems.push(results)
+            receipt.push(results)
         }
         //REMOVE
         let errParam = false
@@ -105,15 +109,23 @@ app.get("/yourOrder", async (req, res) => {
             req.session.submitError = ""
         }
 
+
         else if (req.session.submitError > 1) {
             passParam = req.session.submitError
             orderMenuItems.splice(0, orderMenuItems.length)
             currentOrder.splice(0, currentOrder.length)
             req.session.submitError = ""
+            let total = 0
+            receipt.push({ name: "Delivery Charge", price: DELIVER_CHARGE })
+            for (item of receipt) {
+                total += item.price
+            }
+            receipt.push({ name: "Total", price: total })
+
 
         }
 
-        return res.render("yourOrder", { layout: false, order: orderMenuItems, error: errParam, orderId: passParam })
+        return res.render("yourOrder", { layout: false, order: orderMenuItems, error: errParam, orderId: passParam, rec: receipt })
     }
     catch (err) {
         console.log(err);
@@ -230,6 +242,73 @@ app.post("/searchOrderStatus", async (req, res) => {
 app.get("/orderHistory", (req, res) => {
     res.render("orderHistory", { layout: false })
 })
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//              Order Processing
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+app.get("/orderProcessing", async (req, res) => {
+    try {
+
+        const results = await orderCollection.find().lean().exec()
+        
+        for (order of results)
+        {
+            //find order Total
+            let total = 0
+            for (item of order.items)
+            {
+                const menuItem = await menuCollection.findOne({name:item}).lean().exec()
+                total += menuItem.price
+            }
+            total += DELIVER_CHARGE
+  
+            if (order.driverName !== "")
+            {
+                const driver = await driverCollection.findOne({username:order.driverName}).lean().exec()
+                order.driverName = driver.fullName
+                order.license = driver.license
+            }
+            
+            //vars for display purposes
+            order.total = total.toFixed(2)
+            order.ready = order.status === "RECEIVED" //used to determine showing READY button or not
+
+        }
+        results.sort((a,b) => 
+        {
+            const dateA = new Date(a.dateAndTime)
+            const dateB = new Date(b.dateAndTime)
+            if (dateA < dateB) return 1
+            if (dateA > dateB) return -1
+            return 0
+        })
+        
+        return res.render("orderProcessing", { layout: false, orders:results })
+
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
+})
+
+app.post("/orderProcessing", async (req, res) => {
+    //load with search
+    res.render("orderProcessing", { layout: false })
+})
+app.get("/processingHistory", (req, res) => {
+    res.render("history", { layout: false })
+})
+
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+//                      Driver Page (Johnny)
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
 
 // =================== Login Page ================================
 
