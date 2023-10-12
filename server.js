@@ -16,7 +16,7 @@ app.use(session({
 const myStorage = multer.diskStorage({
     destination: "./public/photo",
     filename: function (req, file, cb) {
-        cb(null, `${Date.now()} ${path.extname(file.originalname)}`)
+        cb(null, req.params.confirmationId + path.extname(file.originalname))
     }
 })
 
@@ -108,6 +108,7 @@ app.get("/yourOrder", async (req, res) => {
             errParam = true
             req.session.submitError = ""
         }
+
 
         else if (req.session.submitError > 1) {
             passParam = req.session.submitError
@@ -347,7 +348,7 @@ app.post("/login", async (req, res) => {
             }
             req.session.isLoggedIn = true
             // redirect the user toor dashboard upon successful login
-            return res.redirect("/dashboard")
+            return res.redirect("/openDeliveries")
         } else {
             console.log("Invalid credentials. Please try again!")
             return res.render("login", {
@@ -396,10 +397,10 @@ app.get("/openDeliveries", ensureLogin, async (req, res) => {
     }
 })
 
-app.post("/takeOrder/:customerName", ensureLogin, async (req, res) => {
-    const customerName = req.params.customerName
+app.post("/takeOrder/:confirmationId", ensureLogin, async (req, res) => {
+    const confirmationId = req.params.confirmationId
     try {
-        const customerOrder = await orderCollection.findOne({ customerName: customerName })
+        const customerOrder = await orderCollection.findOne({ confirmationId: confirmationId })
         const driver = req.session.driver
         const updateStatus = {
             status: "IN TRANSIT",
@@ -426,10 +427,10 @@ app.get("/fulfillment", ensureLogin, async (req, res) => {
     }
 })
 
-app.post("/orderArrived/:customerName", ensureLogin, async (req, res) => {
-    const customerName = req.params.customerName
+app.post("/orderArrived/:confirmationId", ensureLogin, async (req, res) => {
+    const confirmationId = req.params.confirmationId
     try {
-        const customerOrder = await orderCollection.findOne({ customerName: customerName })
+        const customerOrder = await orderCollection.findOne({ confirmationId: confirmationId })
         const updateStatus = {
             status: "Delivered"
         }
@@ -441,7 +442,7 @@ app.post("/orderArrived/:customerName", ensureLogin, async (req, res) => {
 })
 
 // ======================= Photo upload =======================
-app.post("/photoUpload", ensureLogin, upload.single("photo"), async (req, res) => {
+app.post("/photoUpload/:confirmationId", ensureLogin, upload.single("photo"), async (req, res) => {
     const formFile = req.file
     if (req.file === undefined) {
         res.render("fulfillment", { errorMsg: `photo not provided with form data`, layout: false })

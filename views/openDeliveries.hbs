@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/deliveries.css"/>
+    <link rel="stylesheet" href="/css/deliveries.css" />
+
     <title>Order List</title>
 </head>
+
 <body>
     <header>
         <nav>
@@ -28,13 +31,13 @@
                     <p>Address: {{this.address}}</p>
                     <p>Date: {{this.dateAndTime}}</p>
                     <ul>
-                    {{#each this.items}}
+                        {{#each this.items}}
                         <li>Item: {{this}}</li>
-                    {{/each}}
+                        {{/each}}
                     </ul>
                     <h3>Status: {{this.status}}</h3>
                 </div>
-                <form action="/takeOrder/{{this.customerName}}" method="post">
+                <form action="/takeOrder/{{this.confirmation}}" method="post">
                     <button type="submit">Take Order</button>
                 </form>
             </div>
@@ -44,4 +47,5 @@
 
 
 </body>
+
 </html>
