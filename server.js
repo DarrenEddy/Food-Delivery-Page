@@ -94,6 +94,7 @@ app.get("/", async (req, res) => {
 //===================== Your Order ================================
 app.get("/yourOrder", async (req, res) => {
     let receipt = []
+    let total = 0
     try {
         const orderMenuItems = []
         for (nameOfItem of currentOrder) {
@@ -114,17 +115,17 @@ app.get("/yourOrder", async (req, res) => {
             orderMenuItems.splice(0, orderMenuItems.length)
             currentOrder.splice(0, currentOrder.length)
             req.session.submitError = ""
-            let total = 0
+            
             receipt.push({ name: "Delivery Charge", price: DELIVER_CHARGE })
             for (item of receipt) {
                 total += item.price
             }
-            receipt.push({ name: "Total", price: total.toFixed(2) })
+           
 
 
         }
 
-        return res.render("yourOrder", { layout: false, order: orderMenuItems, error: errParam, orderId: passParam, rec: receipt })
+        return res.render("yourOrder", { layout: false, order: orderMenuItems, error: errParam, orderId: passParam, rec: receipt, orderTotal:total.toFixed(2) })
     }
     catch (err) {
         console.log(err);
@@ -207,6 +208,7 @@ app.get("/orderStatus", async (req, res) => {
 
 app.post("/searchOrderStatus", async (req, res) => {
     const orderId = req.body.orderId
+    const fs = require('fs')
 
     try {
 
@@ -224,7 +226,9 @@ app.post("/searchOrderStatus", async (req, res) => {
         if (result.driverName !== "") {
             driver = await driverCollection.findOne({ username: result.driverName }).lean().exec()
         }
-        console.log(driver)
+
+        result.hasImage = fs.existsSync(`public/photo/${result.confirmation}.jpg`)
+        //console.log(driver)
 
         return res.render("orderStatus", { layout: false, error: "", order: result, driver: driver })
 
@@ -238,9 +242,10 @@ app.post("/searchOrderStatus", async (req, res) => {
 })
 
 // =================== Order History ================================
-app.get("/orderHistory", (req, res) => {
-    res.render("orderHistory", { layout: false })
-})
+// app.get("/orderHistory", (req, res) => {
+//     res.render("orderHistory", { layout: false })
+// })
+
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //              Order Processing
@@ -306,7 +311,7 @@ app.post("/orderProcessing", async (req, res) => {
         }
 
 
-        const results = await orderCollection.find({ status: { $ne: "Delivered" }, customerName: searchName }).lean().exec()
+        const results = await orderCollection.find({ status: { $ne: "Delivered" }, customerName: { $regex : new RegExp(searchName, "i") } }).lean().exec()
 
         if (results.length === 0) {
             return res.render("orderProcessing", { layout: false, orders: results, error: "No Matches Found" })
@@ -437,7 +442,7 @@ app.post("/processingHistory", async (req, res) => {
         }
 
 
-        const results = await orderCollection.find({ status: "Delivered", customerName: searchName }).lean().exec()
+        const results = await orderCollection.find({ status: "Delivered", customerName:  { $regex : new RegExp(searchName, "i") }}).lean().exec()
 
         if (results.length === 0) {
             return res.render("history", { layout: false, orders: results, error: "No Matches Found" })
@@ -507,7 +512,7 @@ app.post("/login", async (req, res) => {
         passwordFromUI === undefined ||
         userNameFromUI === "" ||
         passwordFromUI === "") {
-        console.log(`Missing Credentials`)
+        //console.log(`Missing Credentials`)
         // show error is isername or password is not provided or retrieved from form
         return res.render("login", { errorMsg: "Missing Credentials", layout: false })
     }
@@ -520,7 +525,7 @@ app.post("/login", async (req, res) => {
         }
         if (userNameFromUI === driver.username &&
             passwordFromUI === driver.password) {
-            console.log(`Login successful for ${driver.username}`)
+            //console.log(`Login successful for ${driver.username}`)
             // before redirecting user to dashboard, save any necessary information in session
             req.session.driver = {
                 uname: driver.username,
@@ -533,7 +538,7 @@ app.post("/login", async (req, res) => {
             // redirect the user toor dashboard upon successful login
             return res.redirect("/openDeliveries")
         } else {
-            console.log("Invalid credentials. Please try again!")
+            //console.log("Invalid credentials. Please try again!")
             return res.render("login", {
                 errorMsg: "Invalid credentials. Please try again!",
                 layout: false

@@ -34,11 +34,16 @@
             <button type="submit" class="submitButton">Search</button>
         </form>
 
-        <div class="menu">
+        
         {{#if order}}
-        <p>
+        <div class="status">
+        <p style="font-weight: bold;">
             Order#: {{order.confirmation}}
         </p>
+        <p>
+            Order Status: {{order.status}}
+        </p>
+
         {{#if driver}}
         <div style="text-align:center;">
         <p>
@@ -48,14 +53,17 @@
         <p>License Plate: {{driver.license}}</p>
         </div>
         {{/if}}
-        <p>
-            Order Status: {{order.status}}
-        </p>
+
+        {{#if order.hasImage}}
+        <p>Driver Image</p>
+        <img src="./photo/{{order.confirmation}}.jpg" alt="Delivery Image" class="deliveryImage">
+        {{/if}}
+        
         {{!-- EXTRA? IF TIME  show the picture the driver uploaded --}}
 
-        
-        {{/if}}
         </div>
+        {{/if}}
+        
     </main>
 
 </body>

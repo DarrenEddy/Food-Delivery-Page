@@ -34,6 +34,7 @@
             <a href="/orderProcessing"> Return</a>
         </div>
         {{else}}
+        {{#if orders}}
         {{#each orders}}
         <div class="order">
             <div>
@@ -58,6 +59,7 @@
                 {{else}}
                 {{#if this.hasImage}}
                 <a href="photo/{{this.confirmation}}.jpg"> View Image</a>
+
                 {{/if}}
                 {{/if}}
             </div>
@@ -67,13 +69,17 @@
             <div>
                 <p>Driver: {{this.driverName}}</p>
                 <p>License: {{this.license}}</p>
-                
+
             </div>
             {{else}}
             <div></div>
             {{/if}}
         </div>
         {{/each}}
+        {{else}}
+        <p class="menu">No Orders Currently</p>
+
+        {{/if}}
         {{/if}}
 
 

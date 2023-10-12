@@ -30,12 +30,12 @@
             <table>
                 {{#each order}}
                 <tr>
-                    
+
                     <td>{{this.name}}</td>
                     <td>{{this.price}}</td>
                     <td>
                         <form action="/removeFromCart/{{this.name}}/yourOrder">
-                        <button type="submit" class="removeFromCartButton">X</button>
+                            <button type="submit" class="removeFromCartButton">X</button>
                         </form>
                     </td>
                 </tr>
@@ -47,15 +47,15 @@
             <p>Please Enter Your Name AND Address</p>
             {{/if}}
             <div class="submitButtons">
-            <form action="/submitOrder" method="post">
-                <input type="text" name="name" placeholder="Enter Your Name">
-                <input type="text" name="address" placeholder="Enter Your Address">
-                <button class="submitButton">Submit</button>
-            </form>
+                <form action="/submitOrder" method="post">
+                    <input type="text" name="name" placeholder="Enter Your Name">
+                    <input type="text" name="address" placeholder="Enter Your Address">
+                    <button class="submitButton">Submit</button>
+                </form>
 
-            <form action="/emptyCart" method="get">
-                <button id="emptyCartButton">Empty Cart</button>
-            </form>
+                <form action="/emptyCart" method="get">
+                    <button id="emptyCartButton">Empty Cart</button>
+                </form>
             </div>
 
         </div>
@@ -64,24 +64,28 @@
         <p class="removeFromCartButton">Order#: {{orderId}}</p>
 
         <h2>Receipt</h2>
-         <div class="menu">
+        <div class="menu">
             <table>
                 {{#each rec}}
                 <tr>
-                    
+
                     <td>{{this.name}}</td>
                     <td>$ {{this.price}}</td>
-                    </tr>
+                </tr>
 
                 {{/each}}
-                </table>        
+                <tr class="receiptTotal">
+                    <td>Total:</td>
+                    <td>$ {{orderTotal}}</td>
+                </tr>
+            </table>
         </div>
-        
+
         {{else}}
         <div class="menu">
-        <p>No Items Yet</p>
-        <a href="/">Go Back To Menu</a>
-            </div>
+            <p>No Items Yet</p>
+            <a href="/">Go Back To Menu</a>
+        </div>
         {{/if}}
         {{/if}}
     </main>
