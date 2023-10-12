@@ -69,7 +69,11 @@ const driverCollection = mongoose.model("driver-item", DriverSchema)
 const currentOrder = []
 const DELIVER_CHARGE = 2
 
-// ===================== /menu ====================================
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//                        Restaurant Page 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 app.get("/", async (req, res) => {
     try {
         const results = await menuCollection.find().lean().exec();
@@ -241,12 +245,6 @@ app.post("/searchOrderStatus", async (req, res) => {
 
 })
 
-// =================== Order History ================================
-// app.get("/orderHistory", (req, res) => {
-//     res.render("orderHistory", { layout: false })
-// })
-
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //              Order Processing
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -360,22 +358,6 @@ app.post("/orderProcessing", async (req, res) => {
         console.log(err);
         return res.send(err)
     }
-
-})
-
-app.get("/ready/:id", async (req, res) => {
-    const updateInfo = { status: "READY FOR DELIVERY" }
-    const updateId = req.params.id
-    try {
-        const order = await orderCollection.findOne({ confirmation: updateId })
-        await order.updateOne(updateInfo)
-        return res.redirect("/orderProcessing")
-    }
-    catch (err) {
-        console.log(err);
-        return res.send(err)
-    }
-
 
 })
 
@@ -493,6 +475,24 @@ app.post("/processingHistory", async (req, res) => {
     }
 
 })
+
+
+app.get("/ready/:id", async (req, res) => {
+    const updateInfo = { status: "READY FOR DELIVERY" }
+    const updateId = req.params.id
+    try {
+        const order = await orderCollection.findOne({ confirmation: updateId })
+        await order.updateOne(updateInfo)
+        return res.redirect("/orderProcessing")
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
+
+})
+
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 //                      Driver Page (Johnny)
@@ -654,7 +654,7 @@ app.get("/logout", (req, res) => {
     res.redirect("/login")
 })
 
-// ----------------
+
 const onHttpStart = () => {
     console.log(`Express web server running on port: ${HTTP_PORT}`)
     console.log(`Press CTRL+C to exit`)
