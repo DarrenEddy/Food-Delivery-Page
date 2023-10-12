@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/deliveries.css"/>
+    <link rel="stylesheet" href="/css/deliveries.css" />
     <title>Fulfillment page</title>
 </head>
+
 <body>
     <header>
         <nav>
@@ -33,13 +35,13 @@
                     {{/each}}
                 </ul>
                 <h3>Status: {{this.status}}</h3>
-                <form class="orderArrived" action="/orderArrived/{{this.customerName}}" method="post">
+                <form class="orderArrived" action="/orderArrived/{{this.confirmation}}" method="post">
                     <button type="submit">Arrived</button>
                 </form>
             </div>
 
 
-            <form class="uploadphoto" action="/photoUpload" method="post" enctype="multipart/form-data">
+            <form class="uploadphoto" action="/photoUpload/{{this.confirmation}}" method="post" enctype="multipart/form-data">
                 <label for="photo">Upload your photo</label>
                 <input type="file" name="photo" required />
                 <button type="submit">Upload photo</button>
@@ -48,4 +50,5 @@
         {{/each}}
     </div>
 </body>
+
 </html>

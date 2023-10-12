@@ -16,7 +16,7 @@ app.use(session({
 const myStorage = multer.diskStorage({
     destination: "./public/photo",
     filename: function (req, file, cb) {
-        cb(null, `${Date.now()} ${path.extname(file.originalname)}`)
+        cb(null, req.params.confirmationId + path.extname(file.originalname))
     }
 })
 
@@ -69,7 +69,7 @@ const driverCollection = mongoose.model("driver-item", DriverSchema)
 const currentOrder = []
 const DELIVER_CHARGE = 2
 
-// ===================== /menu =============================
+// ===================== /menu ====================================
 app.get("/", async (req, res) => {
     try {
         const results = await menuCollection.find().lean().exec();
@@ -119,7 +119,7 @@ app.get("/yourOrder", async (req, res) => {
             for (item of receipt) {
                 total += item.price
             }
-            receipt.push({ name: "Total", price: total })
+            receipt.push({ name: "Total", price: total.toFixed(2) })
 
 
         }
@@ -248,41 +248,45 @@ app.get("/orderHistory", (req, res) => {
 app.get("/orderProcessing", async (req, res) => {
     try {
 
-        const results = await orderCollection.find().lean().exec()
-        
-        for (order of results)
-        {
+        const results = await orderCollection.find({ status: { $ne: "Delivered" } }).lean().exec()
+
+        for (order of results) {
             //find order Total
             let total = 0
-            for (item of order.items)
-            {
-                const menuItem = await menuCollection.findOne({name:item}).lean().exec()
+            for (item of order.items) {
+                const menuItem = await menuCollection.findOne({ name: item }).lean().exec()
                 total += menuItem.price
             }
             total += DELIVER_CHARGE
-  
-            if (order.driverName !== "")
-            {
-                const driver = await driverCollection.findOne({username:order.driverName}).lean().exec()
+
+            if (order.driverName !== "") {
+                const driver = await driverCollection.findOne({ username: order.driverName }).lean().exec()
                 order.driverName = driver.fullName
                 order.license = driver.license
             }
-            
+
             //vars for display purposes
             order.total = total.toFixed(2)
             order.ready = order.status === "RECEIVED" //used to determine showing READY button or not
 
+            //check if an file in public/photo with the name of the confirmation exists
+            const fs = require('fs')
+            order.hasImage = fs.existsSync(`public/photo/${order.confirmation}.jpg`)
+            //console.log(order.hasImage)
+
+            const times = order.dateAndTime.split(":")
+            order.time = times[0] + ":" + times[1]
+
         }
-        results.sort((a,b) => 
-        {
+        results.sort((a, b) => {
             const dateA = new Date(a.dateAndTime)
             const dateB = new Date(b.dateAndTime)
             if (dateA < dateB) return 1
             if (dateA > dateB) return -1
             return 0
         })
-        
-        return res.render("orderProcessing", { layout: false, orders:results })
+
+        return res.render("orderProcessing", { layout: false, orders: results })
 
     }
     catch (err) {
@@ -293,21 +297,201 @@ app.get("/orderProcessing", async (req, res) => {
 })
 
 app.post("/orderProcessing", async (req, res) => {
-    //load with search
-    res.render("orderProcessing", { layout: false })
+    try {
+
+        const searchName = req.body.customerName
+
+        if (searchName === "" || searchName === undefined) {
+            return res.redirect("/orderProcessing")
+        }
+
+
+        const results = await orderCollection.find({ status: { $ne: "Delivered" }, customerName: searchName }).lean().exec()
+
+        if (results.length === 0) {
+            return res.render("orderProcessing", { layout: false, orders: results, error: "No Matches Found" })
+        }
+        else {
+            for (order of results) {
+                //find order Total
+                let total = 0
+                for (item of order.items) {
+                    const menuItem = await menuCollection.findOne({ name: item }).lean().exec()
+                    total += menuItem.price
+                }
+                total += DELIVER_CHARGE
+
+                if (order.driverName !== "") {
+                    const driver = await driverCollection.findOne({ username: order.driverName }).lean().exec()
+                    order.driverName = driver.fullName
+                    order.license = driver.license
+                }
+
+                //vars for display purposes
+                order.total = total.toFixed(2)
+                order.ready = order.status === "RECEIVED" //used to determine showing READY button or not
+
+                //check if an file in public/photo with the name of the confirmation exists
+                const fs = require('fs')
+                order.hasImage = fs.existsSync(`public/photo/${order.confirmation}.jpg`)
+                //console.log(order.hasImage)
+
+                const times = order.dateAndTime.split(":")
+                order.time = times[0] + ":" + times[1]
+
+            }
+            results.sort((a, b) => {
+                const dateA = new Date(a.dateAndTime)
+                const dateB = new Date(b.dateAndTime)
+                if (dateA < dateB) return 1
+                if (dateA > dateB) return -1
+                return 0
+            })
+
+            return res.render("orderProcessing", { layout: false, orders: results })
+        }
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
 })
-app.get("/processingHistory", (req, res) => {
-    res.render("history", { layout: false })
+
+app.get("/ready/:id", async (req, res) => {
+    const updateInfo = { status: "READY FOR DELIVERY" }
+    const updateId = req.params.id
+    try {
+        const order = await orderCollection.findOne({ confirmation: updateId })
+        await order.updateOne(updateInfo)
+        return res.redirect("/orderProcessing")
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
+
 })
 
 
+app.get("/processingHistory", async (req, res) => {
+    try {
 
+        const results = await orderCollection.find({ status: "Delivered" }).lean().exec()
+
+        for (order of results) {
+            //find order Total
+            let total = 0
+            for (item of order.items) {
+                const menuItem = await menuCollection.findOne({ name: item }).lean().exec()
+                total += menuItem.price
+            }
+            total += DELIVER_CHARGE
+
+            if (order.driverName !== "") {
+                const driver = await driverCollection.findOne({ username: order.driverName }).lean().exec()
+                order.driverName = driver.fullName
+                order.license = driver.license
+            }
+
+            //vars for display purposes
+            order.total = total.toFixed(2)
+            order.ready = order.status === "RECEIVED" //used to determine showing READY button or not
+
+            //check if an file in public/photo with the name of the confirmation exists
+            const fs = require('fs')
+            order.hasImage = fs.existsSync(`public/photo/${order.confirmation}.jpg`)
+            //console.log(order.hasImage)
+
+            const times = order.dateAndTime.split(":")
+            order.time = times[0] + ":" + times[1]
+
+        }
+        results.sort((a, b) => {
+            const dateA = new Date(a.dateAndTime)
+            const dateB = new Date(b.dateAndTime)
+            if (dateA < dateB) return 1
+            if (dateA > dateB) return -1
+            return 0
+        })
+
+        return res.render("history", { layout: false, orders: results })
+
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
+})
+
+
+app.post("/processingHistory", async (req, res) => {
+    try {
+
+        const searchName = req.body.customerName
+
+        if (searchName === "" || searchName === undefined) {
+            return res.redirect("/processingHistory")
+        }
+
+
+        const results = await orderCollection.find({ status: "Delivered", customerName: searchName }).lean().exec()
+
+        if (results.length === 0) {
+            return res.render("history", { layout: false, orders: results, error: "No Matches Found" })
+        }
+        else {
+            for (order of results) {
+                //find order Total
+                let total = 0
+                for (item of order.items) {
+                    const menuItem = await menuCollection.findOne({ name: item }).lean().exec()
+                    total += menuItem.price
+                }
+                total += DELIVER_CHARGE
+
+                if (order.driverName !== "") {
+                    const driver = await driverCollection.findOne({ username: order.driverName }).lean().exec()
+                    order.driverName = driver.fullName
+                    order.license = driver.license
+                }
+
+                //vars for display purposes
+                order.total = total.toFixed(2)
+                order.ready = order.status === "RECEIVED" //used to determine showing READY button or not
+
+                //check if an file in public/photo with the name of the confirmation exists
+                const fs = require('fs')
+                order.hasImage = fs.existsSync(`public/photo/${order.confirmation}.jpg`)
+                //console.log(order.hasImage)
+
+                const times = order.dateAndTime.split(":")
+                order.time = times[0] + ":" + times[1]
+
+            }
+            results.sort((a, b) => {
+                const dateA = new Date(a.dateAndTime)
+                const dateB = new Date(b.dateAndTime)
+                if (dateA < dateB) return 1
+                if (dateA > dateB) return -1
+                return 0
+            })
+
+            return res.render("history", { layout: false, orders: results })
+        }
+    }
+    catch (err) {
+        console.log(err);
+        return res.send(err)
+    }
+
+})
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
 //                      Driver Page (Johnny)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
 
 // =================== Login Page ================================
 
@@ -330,7 +514,7 @@ app.post("/login", async (req, res) => {
     try {
 
         const driver = await driverCollection.findOne({ username: userNameFromUI }).lean().exec()
-        console.log(JSON.stringify(driver))
+        //console.log(JSON.stringify(driver))
         if (driver === null) {
             return res.render("login", { errorMsg: "User not found ", layout: false })
         }
@@ -347,7 +531,7 @@ app.post("/login", async (req, res) => {
             }
             req.session.isLoggedIn = true
             // redirect the user toor dashboard upon successful login
-            return res.redirect("/dashboard")
+            return res.redirect("/openDeliveries")
         } else {
             console.log("Invalid credentials. Please try again!")
             return res.render("login", {
@@ -396,14 +580,14 @@ app.get("/openDeliveries", ensureLogin, async (req, res) => {
     }
 })
 
-app.post("/takeOrder/:customerName", ensureLogin, async (req, res) => {
-    const customerName = req.params.customerName
+app.post("/takeOrder/:confirmationId", ensureLogin, async (req, res) => {
+    const confirmationId = req.params.confirmationId
     try {
-        const customerOrder = await orderCollection.findOne({ customerName: customerName })
+        const customerOrder = await orderCollection.findOne({ confirmation: confirmationId })
         const driver = req.session.driver
         const updateStatus = {
             status: "IN TRANSIT",
-            driverName: driver.username,
+            driverName: driver.uname,
         }
         await customerOrder.updateOne(updateStatus)
         res.redirect("/openDeliveries")
@@ -426,10 +610,10 @@ app.get("/fulfillment", ensureLogin, async (req, res) => {
     }
 })
 
-app.post("/orderArrived/:customerName", ensureLogin, async (req, res) => {
-    const customerName = req.params.customerName
+app.post("/orderArrived/:confirmationId", ensureLogin, async (req, res) => {
+    const confirmationId = req.params.confirmationId
     try {
-        const customerOrder = await orderCollection.findOne({ customerName: customerName })
+        const customerOrder = await orderCollection.findOne({ confirmation: confirmationId })
         const updateStatus = {
             status: "Delivered"
         }
@@ -441,14 +625,17 @@ app.post("/orderArrived/:customerName", ensureLogin, async (req, res) => {
 })
 
 // ======================= Photo upload =======================
-app.post("/photoUpload", ensureLogin, upload.single("photo"), async (req, res) => {
+app.post("/photoUpload/:confirmationId", ensureLogin, upload.single("photo"), async (req, res) => {
     const formFile = req.file
+    formFile.filename = req.params.confirmationId
     if (req.file === undefined) {
         res.render("fulfillment", { errorMsg: `photo not provided with form data`, layout: false })
     }
 
     if (req.body !== undefined) {
+
         const photo = { src: `/photo/${formFile.filename}` }
+
         res.render("fulfillment", { layout: false, uploadedPhoto: "Photo of order delivery uploaded" })
     } else {
         res.render("fulfillment", { errorMsg: `Unable to receive data from form`, layout: false })
