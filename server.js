@@ -604,7 +604,8 @@ app.post("/takeOrder/:confirmationId", ensureLogin, async (req, res) => {
 // ===================== Fulfillment Page =======================
 app.get("/fulfillment", ensureLogin, async (req, res) => {
     try {
-        const transitOrder = await orderCollection.find({ status: "IN TRANSIT" }).lean().exec();
+        
+        const transitOrder = await orderCollection.find({ status: "IN TRANSIT", driverName:req.session.driver.uname}).lean().exec();
         if (transitOrder.length === 0) {
             res.render("fulfillment", { errorMsg: `No order extracted`, layout: false })
         } else {
